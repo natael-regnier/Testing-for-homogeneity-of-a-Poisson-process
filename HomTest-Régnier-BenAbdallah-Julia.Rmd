@@ -1,0 +1,932 @@
+---
+title: "Projet Poisson HomTest"
+output:
+  pdf_document: default
+  html_document: default
+date: "2024-04-25"
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Test d'homogénéité d'un processus de Poisson
+
+## Contexte du projet
+
+Les processus de Poisson inhomogènes fournissent des modèles pour une
+variété de phénomènes physiques. Par exemple, si à chaque panne un
+système est réparé à son état au moment de la panne et remis en service,
+alors les pannes sont souvent modélisées par un processus de Poisson
+inhomogène, à condition que les temps de réparation puissent être
+négligés. Dans certaines de ces situations, il peut être raisonnable de
+supposer que l'intensité, $\lambda(\cdot)$, est croissante, donc des
+tests de
+
+$$
+H_0 : \lambda(\cdot) \text{ est constante} \quad \text{contre} \quad H_1 : \lambda(\cdot) \text{ est croissante}
+$$
+
+sont adaptés. Les résultats de tels tests pourraient indiquer si le
+simple processus de Poisson homogène (HPP) peut être adéquat ou si un
+modèle plus général de NHPP est requis.
+
+Plusieurs tests sont examinés dans [Bain et al., 1985], basés sur
+différentes caractéristiques des processus de Poisson homogènes, tels
+que des temps interarrivées exponentiels indépendants et identiquement
+distribués (i.i.d.) (voir [Lilliefors, 1969]) ou la distribution
+conditionnelle des temps d'arrivée étant donné le nombre d'événements.
+
+Dans [Bain et al., 1985], nous examinons deux tests basés sur la
+distribution conditionnelle des temps d'arrivée étant donné le nombre
+d'événements puis nous les appliquons aux demandes d'indemnisation pour
+de grands sinistres incendie au Danemark, de 1980 à 1990.
+
+## 1 Construction des tests
+
+Soit $(N_t)_{t \in \mathbb{R}^{+}}$ un processus de Poisson de fonction
+d'intensité $\lambda(\cdot)$ croissante. Soient $T^{*} > 0$ et
+$n \in \mathbb{N}^{*}$. On suppose que $N_{T^{*}} = n$ et on note
+$0 < T_1 < T_2 < \ldots < T_n < T^{*}$ les temps d'arrivée
+correspondants. On souhaite tester si $(N_t)_{t \in \mathbb{R}^{+}}$ est
+homogène, c'est-à-dire on teste : $$
+\mathcal{H}_0 : \lambda(\cdot) \text{ est constante} \quad \text{contre} \quad \mathcal{H}_1 : \lambda(\cdot) \text{ n'est pas constante}
+$$
+
+### 1.1 Test $L$
+
+#### 1.1.1 Construction de la statistique de test
+
+On se place sous $\mathcal{H}_0$. Sachant $N_{T^{*}} = n$, on a $$
+(T_1, T_2, \ldots, T_n)\stackrel{(\mathcal{L})}{=} (U_{(1)}, U_{(2)}, \ldots, U_{(n)})
+$$ où $U_{(1)}, U_{(2)}, \ldots, U_{(n)}$ désignent les statistiques
+d'ordre de
+$U_{1}, U_{2}, \ldots, U_{n}\stackrel{iid}{\sim} \mathcal{U}([0,T^{*}]).$
+
+Posons $$
+L = \sum_{i = 1}^{n} \frac{T_i}{T^{*}}.
+$$La somme étant invariante par changement d'ordre des termes, $L$ a la
+même loi qu'une somme de $n$ variable aléatoires indépendantes iid de
+loi uniforme sur [0,1] qu'on note $Y_1, Y_2, \ldots, Y_n$. On peut donc
+appliquer le TCL pour obtenir une loi asymptotique connue.
+
+Notons $$
+Z_n = \sqrt{n} \frac{\frac{1}{n}L - \mathbb{E}\left[Y_1\right]}{\sqrt{\text{Var}(Y_1)}} = \sqrt{12n} \left( \frac{1}{n} \sum_{i = 1}^{n} \frac{T_i}{T^{*}} - \frac{1}{2} \right).
+$$ Alors, d'après le TCL, $$
+Z_n \underset{n \rightarrow +\infty}{\xrightarrow{\mathcal{L}}} \mathcal{N}(0,1)
+ \quad \text{sous } \mathcal{H}_0.$$ Aucun paramètre n'est inconnu dans
+$Z_n$ et dans sa loi asymptotique sous $\mathcal{H}_0$, c'est donc bien
+une statistique de test asymptotique.
+
+#### 1.1.2 Zone de rejet et $p$-valeur
+
+Sous $\mathcal{H}_1$, $\lambda(\cdot)$ est croissante et non constante
+donc les événements arrivent de plus en plus fréquemment avec le temps.
+Ainsi, les $T_i$ ont tendance à être plus concentrés vers $T^{*}$ à
+mesure que $i$ augmente tandis que sous $\mathcal{H}_{0}$ les $T_i$ se
+répartissent uniformément sur l'intervalle [0,$T^{*}$]. On en déduit que
+$L$ et donc $Z_n$ a tendance à être plus grand sous $\mathcal{H}_1$ que
+sous $\mathcal{H}_0$. On définit ainsi la zone de rejet au niveau
+$\alpha$ $$
+\mathcal{R}_{\alpha} = \{Z_n \geqslant z_{1 - \alpha}\}
+$$ avec $z_{1 - \alpha}$ le $(1 - \alpha)$-quantile d'une
+$\mathcal{N}(0,1)$ de sorte que
+$$\mathbb{P}_{\mathcal{H}_0}\left( \mathcal{R}_{\alpha} \right) \underset{n \rightarrow +\infty}{\xrightarrow{}} \alpha.$$
+De plus, on a la $p$-valeur $$
+\hat{\alpha} = \mathbb{P}_{\mathcal{H}_0}\left( Z_n \geqslant {Z_{n}}^{obs} \right) \approx 1 - \Phi({Z_{n}}^{obs})
+$$ pour $n$ grand avec $\Phi$ la fonction de répartition d'une
+$\mathcal{N}$(0,1).
+
+### 1.2 Test $Z$
+
+#### 1.2.1 Construction de la statistique de test
+
+On se place sous $\mathcal{H}_0$. Sachant $N_{T^{*}} = n$, si l'on pose
+$$
+Z = 2\sum_{i = 1}^{n} \ln\left(\frac{T^{*}}{T_i}\right),
+$$ alors $Z$ a la même loi que
+$$2\sum_{i = 1}^{n} \ln\left(\frac{1}{Y_i}\right) = - 2\sum_{i = 1}^{n} \ln\left(Y_i\right)$$
+où $Y_1, Y_2, \ldots, Y_n \stackrel{iid}{\sim} \mathcal{U}([0,1])$
+d'après la loi conditionnelle des $T_i$ comme vu dans le premier test.
+
+Or, par inversion on sait que si $Y_i \sim \mathcal{U}([0,1])$ alors
+$-2 \ln(Y_i) \sim \mathcal{E}\left(\frac{1}{2}\right)$. $Z$ est donc une
+somme de $n$ variables aléatoires iid de loi exponentielle de paramètre
+$\frac{1}{2}$, c'est-à-dire $$
+Z \sim \Gamma\left(n,\frac{1}{2}\right) \stackrel{(\mathcal{L})}{=} \chi^{2}(2n) \quad \text{sous } \mathcal{H}_0.
+$$ Aucun paramètre n'est inconnu dans $Z$ et dans sa loi sous
+$\mathcal{H}_{0}$, c'est donc bien une statistique de test.
+
+#### 1.2.2 Zone de rejet et $p$-valeur
+
+Pour les mêmes raisons que dans le premier test, $Z$ a tendance à
+prendre de plus petites valeurs sous $\mathcal{H}_1$ que sous
+$\mathcal{H}_0$. On a donc la zone de rejet au niveau $\alpha$ $$
+\mathcal{R}_{\alpha} = \{Z \leqslant x_{2n,\alpha}\}
+$$ avec $x_{2n,\alpha}$ le $\alpha$-quantile d'une $\chi^{2}(2n)$ de
+sorte que
+$$\mathbb{P}_{\mathcal{H}_0}\left( \mathcal{R}_{\alpha} \right) = \alpha.$$
+On a également la $p$-valeur $$
+\hat{\alpha} = \mathbb{P}_{\mathcal{H}_0}\left( Z \leqslant Z^{obs} \right) = F_{\chi^{2}(2n)}(Z^{obs})
+$$ où $F_{\chi^{2}(2n)}$ est la fonction de répartition d'une
+$\chi^{2}(2n)$.
+
+## 2 Simulations numériques
+
+Commençons par simuler des processus de Poisson homogènes et non
+homogènes.
+
+### 2.1 Processus de Poisson homogène
+
+On simule un processus de Poisson homogène d'intensité `lambda` sur
+l'intervalle [0,`Tmax`].
+
+```{r simulPPh}
+simulPPh = function(lambda,Tmax)
+{
+  n <- rpois(1, Tmax*lambda)
+  arrival_times = runif(n, 0, Tmax)
+  arrival_times = sort(arrival_times)
+  return(arrival_times)
+}
+```
+
+Puis on l'affiche
+
+```{r plot.PP}
+plot.PP<- function(PP)
+{
+  # On affiche les processus de compatge 
+  plot(c(0,PP),0:length(PP),type="s",xlab="temps t",ylab="nombre d'événements au temps t")
+  points(PP,0*PP,type="p",pch=16)
+  lines(PP,0:(length(PP)-1),type="h",lty=2)
+}
+```
+
+```{r eval}
+# Simulation d'un processus de Poisson homogène
+PPh = simulPPh(2,10)
+
+plot.PP(PPh)
+```
+
+### 2.2 Processus de Poisson inhomogènes
+
+On va simuler des processus des Poisson inhomogènes avec plusieurs
+fonctions d'intensité croissantes.
+
+Simulation d'un processus de Poisson inhomogène avec une fonction
+d'intensité donnée`lambda_fct` et un majorant `M` sur un intervalle fixé
+[0,`Tmax`] :
+
+```{r simulPPi}
+simulPPi = function(lambda_fct,Tmax,M)
+{
+  PPh = simulPPh(M,Tmax)
+  n <- length(PPh)
+  list_unif = runif(n, 0, M)
+  
+  mask <- list_unif <= sapply(PPh,lambda_fct)
+  arrival_times <- PPh[mask]
+  arrival_times <- sort(arrival_times)
+  return(arrival_times)
+}
+```
+
+Application à $\lambda_1: x \mapsto 2x.$
+
+```{r lambda1}
+Tmax=10
+lambda_fct1 <- function(x){return(2*x)}
+M1=20
+PPi1 = simulPPi(lambda_fct1, Tmax, M1)
+
+par(mfrow=c(1,2))
+curve(lambda_fct1,from=0,to=Tmax,n=1000)
+plot.PP(PPi1)
+```
+
+Application à $\lambda_2: x \mapsto \frac{3}{10}x^2.$
+
+```{r lambda2}
+Tmax=10
+lambda_fct2 <- function(x){return(0.3*x*x)}
+M2=30
+PPi2 = simulPPi(lambda_fct2, Tmax, M2)
+
+par(mfrow=c(1,2))
+curve(lambda_fct2,from=0,to=Tmax,n=1000)
+plot.PP(PPi2)
+```
+
+Application à
+$\lambda_3: x \mapsto 10\times 1_{[0,7]}(x) + 15\times 1_{]7,10]}(x).$
+
+```{r lambda3}
+Tmax <- 10
+lambda_fct3 <- function(x) { return(10 * ifelse(x >= 0 & x <= 7, 1, 0) + 15 * ifelse(x > 7 & x <= 10, 1, 0)) }
+M3 <- 15
+PPi3 <- simulPPi(lambda_fct3, Tmax, M3)
+
+par(mfrow=c(1,2)) 
+curve(lambda_fct3, from = 0, to = Tmax, n = 1000)
+plot.PP(PPi3)
+```
+
+### 2.3 Implémentation des tests
+
+La fonction `test_L` renvoie la $p$-valeur du test $L$ étant données les
+observation du processus de Poisson (d'intensité croissante) `PP` sur
+[0,`Tmax`].
+
+```{r test_L}
+test_L <- function(PP,Tmax)
+{
+  L <- sum(PP) / Tmax
+  n = length(PP)
+  Zn <- sqrt(12 * n) * (L/n - 1/2)
+  p_value = 1 - pnorm(Zn)
+  return(p_value)
+}
+```
+
+Vérifions la loi asymptotique sous $\mathcal{H}_0$ de la statistique de
+test $Z_n$ ainsi construite.
+
+```{r Zn}
+lambda <- 1
+Tmax <- 10
+num_simulations <- 1000
+Zn_values <- numeric(num_simulations)
+n <- rpois(1, lambda * Tmax)
+for (i in 1:num_simulations) {
+  
+  T <- sort(runif(n, 0, Tmax))
+  L <- sum(T) / Tmax
+  Zn_values[i] <- sqrt(12 * n) * (L/n - 1/2)
+}
+
+# On trace la fonction de répartition empirique de Zn
+plot(ecdf(Zn_values), main="Fct de répartition empirique de Z_n et fct de répartition d'une N(0,1)",lwd = 2)
+
+# On ajoute de lafonction de répartition théorique d'une distribution normale 
+curve(pnorm(x), add = TRUE, col = "red")
+
+legend("bottomright", legend=c("Fct de répartition empirique", "Fonction de répartition gaussienne"), col=c("black", "red"), lty=1)
+```
+
+La loi asymptotique sous $\mathcal{H}_0$ de $Z_n$ est bien vérifiée.
+Notons que $Z_n$ converge très vite, en effet ici $n$ est aux alentours
+de 10 et on a déjà une loi très proche d'une N(0,1).
+
+La fonction `test_Z` renvoie la $p$-valeur du test $Z$ étant données les
+observation du processus de Poisson (d'intensité croissante) `PP` sur
+[0,`Tmax`].
+
+```{r test_Z}
+test_Z <- function(PP,Tmax)
+{
+  Z <- 2 * sum(log(Tmax / PP))
+  n = length(PP)
+  p_value = pchisq(Z, df=2*n)
+  return(p_value)
+}
+```
+
+Vérifions la loi sous $\mathcal{H}_0$ de la statistique de test $Z$
+ainsi construite.
+
+```{r Z}
+lambda <- 1
+Tmax <- 10
+num_simulations <- 1000
+Z_values <- numeric(num_simulations)
+n <- rpois(1, lambda * Tmax)
+for (i in 1:num_simulations) {
+  
+  T <- sort(runif(n, 0, Tmax))
+  Z_values[i] <- 2 * sum(log(Tmax / T))
+}
+
+# Fonction de répartition théorique de la distribution Chi-squared
+theoretical_df <- 2 * n 
+theoretical_cdf <- function(x) { pchisq(x, df = theoretical_df) }
+
+
+
+# On trace de la fonction de répartition empirique
+plot(ecdf(Z_values), main="Fct de répartition empirique de Z et fct de répartition Xhi-deux(2n) ", lwd=2)
+
+# On ajoute de la fonction de répartition théorique
+curve(theoretical_cdf(x), add = TRUE, col = "red")
+
+legend("bottomright", legend=c("Fct de répartition empirique", "Fonction de répartition Xhi-deux"), col=c("black", "red"), lty=1)
+```
+
+La loi sous $\mathcal{H}_0$ de $Z$ est bien vérifiée.
+
+### 2.4 Niveau et puissance des tests
+
+A présent, vérifions le niveau des tests et comparons leurs puissances
+sur différents types de fonctions d'intensité croissantes.
+
+#### 2.4.1 Fonctions affines
+
+Simulation par Monte-Carlo du niveau et de la puissance des tests $L$ et
+$Z$ avec les fonctions d'intensité
+$x \mapsto \beta x + 1, \quad \beta \geq 0$.
+
+```{r plot.level.power1}
+plot.level.power1 <- function(Tmax, TrueBeta, alpha, nsimu,test,nom_du_test)
+{
+  plot(range(TrueBeta), c(alpha, alpha), ylim=c(0,1), xlab="True beta", ylab="Level/Power",
+       type="l", col="red", main=paste(nom_du_test, sep=""))
+  abline(1,0,lty=2,col="blue")
+  
+  for(beta in TrueBeta)
+  {
+    lambda_b = function(x){return(x*beta + 1)}
+    propReject = 0
+    for(sim in 1:nsimu){
+      PPi = simulPPi(lambda_b,Tmax,lambda_b(Tmax))
+      propReject = propReject + (test(PPi,Tmax) <= alpha)/nsimu
+    }
+ 
+    points(beta, propReject)
+    points(beta, propReject + sqrt(abs(propReject*(1-propReject))/nsimu)*qnorm(0.975), pch=2)
+    points(beta, propReject - sqrt(abs(propReject*(1-propReject))/nsimu)*qnorm(0.975), pch=6)  
+  }
+}
+
+```
+
+```{r}
+# Test L and Test Z
+plot.level.combined <- function(Tmax, TrueBeta, alpha, nsimu, test_L, test_Z, title){
+  plot(range(TrueBeta), c(alpha, alpha), ylim=c(0,1), xlab="True beta", ylab="Level/Power",
+       type="l", col="red", main=title)
+  abline(1,0,lty=2,col="blue")
+
+  for(beta in TrueBeta)
+  {
+    lambda_b = function(x){return(x*beta + 1)}
+    propReject_L = 0
+    propReject_Z = 0
+    for(sim in 1:nsimu){
+      PPi = simulPPi(lambda_b, Tmax, lambda_b(Tmax))
+      propReject_L = propReject_L + (test_L(PPi, Tmax) <= alpha) / nsimu
+      propReject_Z = propReject_Z + (test_Z(PPi, Tmax) <= alpha) / nsimu
+    }
+    points(beta, propReject_L, col="blue")
+    points(beta, propReject_Z, col="green")
+  }
+  legend("bottomright", legend=c("Test L", "Test Z"), col=c("blue", "green"), pch=1)
+}
+```
+
+```{r}
+# Test L and Test Z
+plot.level.combined_difference <- function(Tmax, TrueBeta, alpha, nsimu, test_L, test_Z, title){
+  plot(range(TrueBeta), c(-0.05, 0.05), ylim=c(-0.02, 0.04), xlab="True beta", ylab="Difference in Level/Power (L - Z)",
+       type="n", main=title)
+  abline(h=0,lty=2,col="blue")
+
+  for(beta in TrueBeta)
+  {
+    lambda_b = function(x){return(x*beta + 1)}
+    diff_rejection_prop = 0
+    for(sim in 1:nsimu){
+      PPi = simulPPi(lambda_b, Tmax, lambda_b(Tmax))
+      propReject_L = (test_L(PPi, Tmax) <= alpha)
+      propReject_Z = (test_Z(PPi, Tmax) <= alpha)
+      diff_rejection_prop = diff_rejection_prop + (propReject_L - propReject_Z) / nsimu
+    }
+    points(beta, diff_rejection_prop, col="blue")
+  }
+  legend("bottomright", legend="L - Z", col="blue", pch=1)
+}
+```
+
+```{r}
+Tmax = 10
+alpha=0.05
+nsimu=1000
+TrueBeta=c(0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.5,2)
+
+# On crée un vecteur de valeurs x
+x <- seq(0, Tmax, length.out = 100)
+
+plot(x, rep(NA, length(x)), type="n", ylim=c(0, 10), xlim=c(0, 10), xlab="x", ylab="x*beta + 1")
+
+for (beta in TrueBeta) {
+  y <- x*beta + 1
+  lines(x, y, col=rainbow(length(TrueBeta))[which(beta == TrueBeta)], lwd=2)
+}
+
+legend("topright", legend=paste("beta =", TrueBeta), col=rainbow(length(TrueBeta)), lwd=2)
+
+
+par(mfrow=c(1,2))
+plot.level.power1(Tmax,TrueBeta,alpha,nsimu,test_L,"Test L")
+plot.level.power1(Tmax,TrueBeta,alpha,nsimu,test_Z,"Test Z")
+
+plot.level.combined(Tmax, TrueBeta, alpha, nsimu, test_L, test_Z, "Comparison of Test L and Test Z")
+
+plot.level.combined_difference(Tmax, TrueBeta, alpha, nsimu, test_L, test_Z, "Difference in Level/Power (L - Z)")
+```
+
+Les tests sont bien de niveau $\alpha$ (lorsque beta = 0, on est bien
+dans le cas d'une intensité constante). Pour ce type de fonction, les
+deux tests semblent de puissance équivalente.
+
+#### 2.4.2 Fonctions puissance
+
+Simulation par Monte-Carlo du niveau et de la puissance des tests $L$ et
+$Z$ avec les fonctions d'intensité
+$x \mapsto x^{\beta}, \quad \beta \geq 0$.
+
+```{r plot.level.power2}
+plot.level.power2 <- function(Tmax, TrueBeta, alpha, nsimu,test,nom_du_test)
+{
+  plot(range(TrueBeta), c(alpha, alpha), ylim=c(0,1), xlab="True beta", ylab="Level/Power",
+       type="l", col="red", main=paste(nom_du_test, sep=""))
+  abline(1,0,lty=2,col="blue")
+  
+  for(beta in TrueBeta)
+  {
+    lambda_b = function(x){return(x**beta)}
+    propReject = 0
+    for(sim in 1:nsimu){
+      PPi = simulPPi(lambda_b,Tmax,lambda_b(Tmax))
+      propReject = propReject + (test(PPi,Tmax) <= alpha)/nsimu
+    }
+
+    points(beta, propReject)
+    points(beta, propReject + sqrt(abs(propReject*(1-propReject))/nsimu)*qnorm(0.975), pch=2)
+    points(beta, propReject - sqrt(abs(propReject*(1-propReject))/nsimu)*qnorm(0.975), pch=6)  
+  }
+}
+
+```
+
+```{r}
+plot.level.combined2 <- function(Tmax, TrueBeta, alpha, nsimu, test_L, test_Z, title){
+  plot(range(TrueBeta), c(alpha, alpha), ylim=c(0,1), xlab="True beta", ylab="Level/Power",
+       type="l", col="red", main=title)
+  abline(1,0,lty=2,col="blue")
+
+  for(beta in TrueBeta)
+  {
+    lambda_b = function(x){return(x**beta)}
+    propReject_L = 0
+    propReject_Z = 0
+    for(sim in 1:nsimu){
+      PPi = simulPPi(lambda_b, Tmax, lambda_b(Tmax))
+      propReject_L = propReject_L + (test_L(PPi, Tmax) <= alpha) / nsimu
+      propReject_Z = propReject_Z + (test_Z(PPi, Tmax) <= alpha) / nsimu
+    }
+    points(beta, propReject_L, col="blue")
+    points(beta, propReject_Z, col="green")
+  }
+  legend("bottomright", legend=c("Test L", "Test Z"), col=c("blue", "green"), pch=1)
+}
+```
+
+```{r}
+plot.level.combined_difference2 <- function(Tmax, TrueBeta, alpha, nsimu, test_L, test_Z, title){
+  plot(range(TrueBeta), c(-0.05, 0.05), ylim=c(-0.02, 0.08), xlab="True beta", ylab="Difference in Level/Power (Z - L)",
+       type="n", main=title)
+  abline(h=0,lty=2,col="blue")
+
+  for(beta in TrueBeta)
+  {
+    lambda_b = function(x){return(x**beta)}
+    diff_rejection_prop = 0
+    for(sim in 1:nsimu){
+      PPi = simulPPi(lambda_b, Tmax, lambda_b(Tmax))
+      propReject_L = (test_L(PPi, Tmax) <= alpha)
+      propReject_Z = (test_Z(PPi, Tmax) <= alpha)
+      diff_rejection_prop = diff_rejection_prop + (propReject_Z - propReject_L) / nsimu
+    }
+    points(beta, diff_rejection_prop, col="blue")
+  }
+  legend("bottomright", legend="Z - L", col="blue", pch=1)
+}
+```
+
+```{r}
+Tmax = 10
+alpha=0.05
+nsimu=1000
+TrueBeta=c(0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.5,2)
+
+x <- seq(0, Tmax, length.out = 100)
+
+plot(x, rep(NA, length(x)), type="n", ylim=c(0, 10), xlim=c(0, 10), xlab="x", ylab="x^beta")
+
+for (beta in TrueBeta) {
+  y <- x**beta
+  lines(x, y, col=rainbow(length(TrueBeta))[which(beta == TrueBeta)], lwd=2)
+}
+
+legend("topright", legend=paste("beta =", TrueBeta), col=rainbow(length(TrueBeta)), lwd=2)
+
+
+par(mfrow=c(1,2))
+plot.level.power2(Tmax,TrueBeta,alpha,nsimu,test_L,"Test L")
+plot.level.power2(Tmax,TrueBeta,alpha,nsimu,test_Z,"Test Z")
+
+plot.level.combined2(Tmax, TrueBeta, alpha, nsimu, test_L, test_Z, "Comparison of Test L and Test Z")
+
+plot.level.combined_difference2(Tmax, TrueBeta, alpha, nsimu, test_L, test_Z, "Difference in Level/Power (Z - L)")
+```
+
+Les test sont bien de niveau $\alpha$ (lorsque beta = 0, on est bien
+dans le cas d'une intensité constante). Ici, le test $Z$ est légèrement
+plus puissant que le test $L$.
+
+#### 2.4.3 Fonctions en escalier
+
+Simulation par Monte-Carlo du niveau et de la puissance des tests $L$ et
+$Z$ avec les fonctions d'intensité
+$x \mapsto 1_{[0,7]}(x) + k 1_{]7,10]}(x), \quad k \in \mathbb{N}^{*}$.
+
+```{r plot.level.power3}
+plot.level.power3 <- function(Tmax, TrueK, alpha, nsimu,test,nom_du_test)
+{
+  plot(range(TrueK), c(alpha, alpha), ylim=c(0,1), xlab="True k", ylab="Level/Power",
+       type="l", col="red", main=paste(nom_du_test, sep=""))
+  abline(1,0,lty=2,col="blue")
+  
+  for(k in TrueK)
+  {
+    lambda_k <- function(x) { return(ifelse(x >= 0 & x <= 7, 1, 0) + k * ifelse(x > 7 & x <= 10, 1, 0)) }
+    propReject = 0
+    for(sim in 1:nsimu){
+      PPi = simulPPi(lambda_k,Tmax,lambda_k(Tmax))
+      propReject = propReject + (test(PPi,Tmax) <= alpha)/nsimu
+    }
+    # plot the confidence intervals
+    points(k, propReject)
+    points(k, propReject + sqrt(abs(propReject*(1-propReject))/nsimu)*qnorm(0.975), pch=2)
+    points(k, propReject - sqrt(abs(propReject*(1-propReject))/nsimu)*qnorm(0.975), pch=6)  
+  }
+}
+
+```
+
+```{r plot.level.combined3}
+# Test L et Test Z
+plot.level.combined3 <- function(Tmax, TrueK, alpha, nsimu, test_L, test_Z, title){
+  plot(range(TrueK), c(alpha, alpha), ylim=c(0,1), xlab="True k", ylab="Level/Power",
+       type="l", col="red", main=title)
+  abline(1,0,lty=2,col="blue")
+
+  for(k in TrueK)
+  {
+    lambda_k <- function(x) { return(ifelse(x >= 0 & x <= 7, 1, 0) + k * ifelse(x > 7 & x <= 10, 1, 0)) }
+    propReject_L = 0
+    propReject_Z = 0
+    for(sim in 1:nsimu){
+      PPi = simulPPi(lambda_k, Tmax, lambda_k(Tmax))
+      propReject_L = propReject_L + (test_L(PPi, Tmax) <= alpha) / nsimu
+      propReject_Z = propReject_Z + (test_Z(PPi, Tmax) <= alpha) / nsimu
+    }
+    points(k, propReject_L, col="blue")
+    points(k, propReject_Z, col="green")
+  }
+  legend("bottomright", legend=c("Test L", "Test Z"), col=c("blue", "green"), pch=1)
+}
+```
+
+```{r}
+# Test L et Test Z 
+plot.level.combined_difference3 <- function(Tmax, TrueK, alpha, nsimu, test_L, test_Z, title){
+  plot(range(TrueK), c(-0.05, 0.05), ylim=c(-0.05, 0.18), xlab="True k", ylab="Difference in Level/Power (L - Z)",
+       type="n", main=title)
+  abline(h=0,lty=2,col="blue")
+
+  for(k in TrueK)
+  {
+    lambda_k <- function(x) { return(ifelse(x >= 0 & x <= 7, 1, 0) + k * ifelse(x > 7 & x <= 10, 1, 0)) }
+    diff_rejection_prop = 0
+    for(sim in 1:nsimu){
+      PPi = simulPPi(lambda_k, Tmax, lambda_k(Tmax))
+      propReject_L = (test_L(PPi, Tmax) <= alpha)
+      propReject_Z = (test_Z(PPi, Tmax) <= alpha)
+      diff_rejection_prop = diff_rejection_prop + (propReject_L - propReject_Z) / nsimu
+    }
+    points(k, diff_rejection_prop, col="blue")
+  }
+  legend("bottomright", legend="L - Z", col="blue", pch=1)
+}
+```
+
+```{r}
+Tmax = 10
+alpha=0.05
+nsimu=1000
+TrueK=c(1,2,3,4,5,6,7,8,9,10)
+
+x <- seq(0, Tmax, length.out = 100)
+
+plot(x, rep(NA, length(x)), type="n", ylim=c(1, 10), xlim=c(0, 10), xlab="x", ylab="f_k(x)" )
+
+for (k in TrueK) {
+  y <- ifelse(x >= 0 & x <= 7, 1, 0) + (k) * ifelse(x > 7 & x <= 10, 1, 0)
+  lines(x, y, col=rainbow(length(TrueK))[which(k == TrueK)], lwd=2)
+}
+
+legend("topright", legend=paste("k =", TrueK), col=rainbow(length(TrueK)), lwd=2)
+
+
+par(mfrow=c(1,2))
+plot.level.power3(Tmax,TrueK,alpha,nsimu,test_L,"Test L")
+plot.level.power3(Tmax,TrueK,alpha,nsimu,test_Z,"Test Z")
+
+plot.level.combined3(Tmax, TrueK, alpha, nsimu, test_L, test_Z, "Comparison of Test L and Test Z")
+
+plot.level.combined_difference3(Tmax, TrueK, alpha, nsimu, test_L, test_Z, "Difference in Level/Power (L - Z)")
+```
+
+Le test bien de niveau $\alpha$ (lorsque k = 1, on est bien dans le cas
+d'une intensité constante). Cette fois-ci, c'est le test $L$ qui est le
+plus puissant.
+
+## 3 Test sur données réelles
+
+Maintenant, nous allons appliquer ces tests sur des temps d'arrivée
+d'incendies au Danemark entre 1980 et 1990.
+
+Importons les données.
+
+```{r evir}
+#install.packages("evir")
+```
+
+```{r}
+library(evir)
+data("danish")
+length(danish)
+summary(danish)
+#print(danish)
+str(danish)
+```
+
+Récupérons les temps d'arrivée de danish :
+
+```{r}
+data <- attributes(danish)$times
+
+data <- as.POSIXct(data, tz = "Europe/Paris") # On convertit les valeurs du vecteur temps_arrivee en objets de classe POSIXct, qui sont des objets de date et d'heure dans R. On se place sur le fuseau horaire de Paris.
+
+#print(data)
+```
+
+On remarque que les réclamations se font toujours a la même heure (1h en
+heure d'hiver et 2h en heure d'été). Nous allons donc regarder les jours
+d'occurence.
+
+Retirons les doublons dans data.
+
+```{r}
+data <- unique(data)
+
+# On affiche les temps d'arrivée uniques
+#print(data)
+```
+
+### 3.1 Test d'homogénéité des réclamations de 1980 à 1990
+
+Nous allons donc étudier les occurences de réclamations d'incendies sur
+les 4018 jours entre le 1er janvier 1980 et le 31 décembre 1990.
+Construisons `temps_arrivee` en remplaçant chaque date de `data` par un
+nombre entre 0 et 4017 sachant que 0 correspondant au 1er janvier 1980
+et 4017 au 31 décembre 1990 et affichons le processus de Poisson
+associé.
+
+```{r}
+date_debut <- as.Date("1980-01-01")
+date_fin <- as.Date("1990-12-31")
+
+# On Calcule la différence en jours entre chaque date et le 1er janvier 1980
+temps_arrivee <- as.numeric(difftime(data, date_debut, units = "days"))
+
+# On affiche les nombres correspondant aux dates
+#print(temps_arrivee)
+plot.PP(temps_arrivee)
+```
+
+On remarque une évolution non linéaire du nombre de réclamations en
+fonction du temps dans la fenêtre de temps 1500 à 2000 environ. Cela
+suggère une inhomogénéité de temps_arrivee.
+
+Maintenant, effectuons les tests d'homogénéité de Poisson L et Z sur
+temps_arrivee
+
+```{r}
+print(paste("p-valeur du test L :",test_L(temps_arrivee,4017)))
+print(paste("p-valeur du test Z :",test_Z(temps_arrivee,4017)))
+
+```
+
+Les $p$-valeurs des 2 tests sont très inférieures à 5%. On rejette
+l'homogénéité de temps_arrivee au niveau 5% avec conviction.
+
+### 3.2 Test année par année : FWER avec correction de Bonferroni
+
+On peut se demander si l'inhomogénéité de temps_arrivee est localisée
+sur une année en particulier.
+
+Pour $i \in \{1, \ldots, 11\}$, notons $\mathcal{H}_{0,i}$ :
+"temps_arrivee est homogène sur la $i$-ème année". Nous allons tester
+chaque $\mathcal{H}_{0,i}$ en contrôlant la family wise error rate
+(FWER) ie le risque de rejeter au moins un $\mathcal{H}_{0,i}$ à tort.
+Pour cela, on effectue la correction de Bonferroni c'est-à-dire on teste
+chaque $\mathcal{H}_{0,i}$ au niveau $\frac{\alpha}{11}$ de sorte que
+
+$$
+\begin{align*}
+    FWER &= \mathbb{P}\left( \text{rejeter au moins un } \mathcal{H}_{0,i} \text{ à tort} \right) \\
+    &= \mathbb{P}\left( \bigcup_{i=1}^{11} \{ \text{rejeter } \mathcal{H}_{0,i} \text{ à tort} \} \right) \\
+    &\leq \sum_{i=1}^{11} \mathbb{P}\left( \text{rejeter } \mathcal{H}_{0,i} \text{ à tort} \right) \\
+    & \leq \sum_{i=1}^{11} \frac{\alpha}{11} = \alpha
+\end{align*}
+$$
+
+Définissons `temps_arrivee1` où temps_arrivee1[i] représente le
+processus temps_arrivee sur l'année i où l'on a remis à 0 le début de
+l'année $i$.
+
+```{r}
+library(lubridate)
+
+# On définit les dates de début et de fin
+date_debut <- as.Date("1980-01-01")
+date_fin <- as.Date("1990-12-31")
+
+nb_annees <- as.numeric(format(date_fin, "%Y")) - as.numeric(format(date_debut, "%Y")) + 1
+
+# On anitialise le vecteur de vecteurs temps_arrivee1
+temps_arrivee1 <- vector("list", length = nb_annees)
+
+for (i in 0:(nb_annees - 1)) { # Pour parcourir chaque année
+  # Début de l'année
+  date_debut_annee <- as.Date(paste0(format(date_debut + years(i)), "-01-01"))
+  
+  
+  date_fin_annee <- as.Date(paste0(format(date_debut + years(i)), "-12-31"))
+  
+  # On filtre les dates pour l'année i
+  dates_annee_i <- data[format(data, "%Y") == format(date_debut + years(i), "%Y")]
+  
+  
+  temps_arrivee_annee <- as.numeric(difftime(dates_annee_i, date_fin_annee, units = "days"))
+  
+  
+  temps_arrivee1[[i + 1]] <- temps_arrivee_annee
+}
+
+
+print(temps_arrivee1)
+
+```
+
+Affichons les processus pour chaque année.
+
+```{r}
+# On visualise les processus sur chaque année
+for (i in seq_along(temps_arrivee1)) {  
+  current_data <- temps_arrivee1[[i]]  
+  plot.PP(current_data)  
+  if (dev.cur() != 1) { 
+    title(paste("Année", 1979 + i))  
+  } else {    
+    print(paste("No active plot device for index", i))  
+  } 
+}
+```
+
+Le nombre de réclamations semble linéaire au cours du temps pour chaque
+année, ce qui suggère que temps_arrivee est homogène année par année.
+
+Effectuons maintenant les tests de chaque $\mathcal{H}_{0,i}$ au niveau
+$\frac{\alpha}{11}$.
+
+```{r}
+alpha = 0.05
+
+test = test_L
+
+for (i in seq_along(temps_arrivee1)) {
+  if (i %% 4 == 1) {
+    p = test(temps_arrivee1[[i]], 365)
+  } else {
+    p = test(temps_arrivee1[[i]], 364)
+  }
+  
+  if (p < alpha/11) {
+    print(paste("temps_arrivee non homogène pour l'année" ,1979 + i,"avec p-valeur =", p))
+  } else {
+    print(paste("temps_arrivee homogène pour l'année" ,1979 + i,"avec p-valeur =", p))
+  }
+}
+
+```
+
+Nous remarquons que sur chaque année et pour les deux tests $L$ et $Z$,
+temps_arrivee est homogène. Estimons l'intensité $\lambda_{i}$ pour
+chaque année afin de voir si l'on constate une évolution d'intensité au
+cours des années.
+
+```{r}
+estimations_lambda <- numeric(length(temps_arrivee1))
+annees <- numeric(length(temps_arrivee1))
+
+for (i in seq_along(temps_arrivee1)) { # Boucle sur chaque année
+  if (i %% 4 == 1) { # Estimation de lambda pour l'année i
+    lambda_estimate <- length(temps_arrivee1[[i]]) / 365
+  } else {
+    lambda_estimate <- length(temps_arrivee1[[i]]) / 364
+  }
+  
+  # On stocke l'estimation de lambda pour l'année i
+  estimations_lambda[i] <- lambda_estimate
+  annees[i] <- 1979 + i
+  
+   # print(paste("Estimation de lambda pour l'année", 1979 + i, ":", lambda_estimate))
+}
+
+# On trace l'évolution des estimations de lambda
+plot(annees, estimations_lambda, type = "l", xlab = "Année", ylab = "Estimation de lambda",
+     main = "Évolution des estimations de lambda au fil des années")
+```
+
+On remarque bien une évolution de l'intensité estimée sur chaque année,
+notamment une forte augmentation entre 1984 et 1986 ce qui explique
+l'inhomogénéité de temps_arrivee sur les 11 ans.
+
+## Conclusion
+
+Nous avons construit les tests $L$ (de Laplace) et $Z$ pour savoir si un
+processus de Poisson $(N_t)_{t \in \mathbb{R}^{+}}$ de fonction
+d'intensité $\lambda(\cdot)$ croissante est homogène ou non. Nous avons
+appliqué ces tests pour des fonctions affines, puissances et constantes
+par morceaux afin de les comparer en mesurant leur puissance.
+
+Pour les fonctions affines, les deux test $L$ et $Z$ sont de puissance
+équivalente.
+
+Pour les fonctions puissance, le test $L$ est plus puissant que le test
+$Z$.
+
+Pour les fonctions constantes par morceaux, le test $Z$ est légèrement
+plus puissant que le test $L$.
+
+Nous avons ensuite appliqué ces tests sur des temps d'arrivée
+d'incendies au Danemark. Lorsque nous appliquons les tests $L$ et $Z$
+pour la période entre 1980 et 1990, nous obtenons des p-valeurs très
+inférieures à 5%, ce qui nous permet de rejeter avec convitcion
+l'homogénéité des temps d'arrivée.
+
+Nous nous sommes cependant demandé si cette inhomogénéité est dûe à une
+année en particulier. Nous avons donc appliqué les deux test sur les
+onze années de notre jeu de données pour tester $\mathcal{H}_{0,i}$ :
+"Le temps d'arrivée est homogène sur la $i$-ème année" en contrôlant le
+Family Wise Error Rate (FWER) en effectuant la correction de Bonferroni.
+
+Lorsque les années sont étudiées individuellement, la linéarité des
+réclamations d'incendies suggère que les temps d'arrivées sont
+homogènes. Néanmoins, on note une évolution de l'intensité estimée sur
+chaque année, notamment une forte augmentation entre 1984 et 1986 ce qui
+explique l'inhomogénéité des temps d'arrivée sur les onze années.
+
+Il pourrait être intéressant par la suite de déterminer la fonction
+d'intensité du processus des réclamations, qui serait probablement sous
+la forme d'une fonction constante par morceaux étant donné l'homogénéité
+du processus sur chaque année.
+
+D'autres tests basés sur le rapport de vraisemblance de de Boswell, ou
+sur les paramètres $\tau$ de Kendall et $\rho$ de Spearman peuvent être
+considérés pour étudier des processus d'intensité $\lambda(\cdot)$
+croissante.
+
+## Références
+
+Bain, L. J., Engelhardt, M., & Wright, F. T. (1985). Tests for an
+Increasing Trend in the Intensity of a Poisson Process: A Power Study.
+Journal of the American Statistical Association, 80(390), 419--422.
+<https://doi.org/10.2307/2287907>
+
+Lilliefors, H. W. (1969). On the Kolmogorov-Smirnov Test for the
+Exponential Distribution with Mean Unknown. Journal of the American
+Statistical Association, 64(325), 387--389.
+<https://doi.org/10.2307/2283748>
+
+Benjamini, Y., & Hochberg, Y. (1995). Controlling the False Discovery
+Rate: A Practical and Powerful Approach to Multiple Testing. Journal of
+the Royal Statistical Society. Series B (Methodological), 57(1),
+289--300. <http://www.jstor.org/stable/2346101>
